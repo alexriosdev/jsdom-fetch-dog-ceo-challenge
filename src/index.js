@@ -12,8 +12,8 @@ const elementListener = (targetID, URL, newElement) => {
   const target = document.querySelector(targetID);
 
   fetch(URL)
-  .then( (response) => response.json() )
-  .then( (data) => showData(target, data.message, newElement) );
+    .then( (response) => response.json() )
+    .then( (data) => showData(target, data.message, newElement) );
 }
 
 const showData = (target, data, element) => {
