@@ -4,6 +4,7 @@ const breedUrl = 'https://dog.ceo/api/breeds/list/all';
 document.addEventListener('DOMContentLoaded', () => {
   elementListener('#dog-image-container', imgUrl, 'div');
   elementListener('#dog-breeds', breedUrl, 'li');
+  dropDownOption('all');
   dropListener();
 });
 
@@ -14,6 +15,11 @@ const elementListener = (targetID, URL, newElement) => {
   fetch(URL)
     .then( (response) => response.json() )
     .then( (data) => showData(target, data.message, newElement) );
+    // .then( (data) =>  {
+    //   for (const [key, value] of Object.entries(data.message)) {
+    //     console.log(`${key}: ${value}`);
+    //   }
+    // });
 }
 
 const showData = (target, data, element) => {
@@ -29,24 +35,46 @@ const handleDiv = (target, data, element) => {
   data.forEach(dogImage => {
     let dogContainer = document.createElement(element);
     target.appendChild(dogContainer);
-    dogContainer.innerHTML = `<img src="${dogImage}" size="50">`;
+    dogContainer.innerHTML = `<img src="${dogImage}" height="200" width="200">`;
   }) 
 }
 
 const handleList = (target, data, element) => {
-  for (const breed in data) {
+  for (const [key, value] of Object.entries(data)) {
     let dogList = document.createElement(element);
+    dogList.innerText = key;
     target.appendChild(dogList);
-    dogList.innerText = breed;
+    if (value.length > 0) {
+      value.forEach(value => handleSubList(dogList, value, element) )
+    }
     listChildListener(dogList);
   }
+}
+
+const handleSubList = (target, data, element) => {
+  let subListNode = document.createElement('ul');
+  let dogSubList = document.createElement(element);
+  dogSubList.innerText = data;
+  target.appendChild(subListNode); 
+  subListNode.appendChild(dogSubList); 
 }
 
 // CHALLENGE 3
 const listChildListener = (child) => {
   child.addEventListener('click', () => {
-    child.style.color = 'blue';
+    colorSwitch(child);
   })
+}
+
+let clicked = false;
+const colorSwitch = (node) => {
+  console.log('asdfsf')
+  clicked = !clicked;
+  if (clicked) {
+    node.style.color = 'blue';
+  } else {
+    node.style.color = 'black';
+  }
 }
 
 // CHALLENGE 4
@@ -57,13 +85,21 @@ const dropListener = () => {
   });
 }
 
-const listFilter = (value) => {
+const listFilter = (value) => {  
   const children = document.querySelector('#dog-breeds').children;
   for (child of children) {
-    if (child.innerHTML.charAt(0) === value) {
+    if (child.innerHTML.charAt(0) === value || value === 'all') {
       child.style.display = 'block';
     } else {
       child.style.display = 'none';
     }
   }
+}
+
+const dropDownOption = (value) => {
+  const dropDown = document.querySelector('#breed-dropdown');
+  const option = document.createElement('option');
+  option.innerText = value;
+  option.value = value;
+  dropDown.appendChild(option);
 }
